@@ -1,0 +1,7 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'lab/style.css' %}" />
+
+<h1> Welcome to the Labinator! </h1>
+<p><a href="{% url 'lab:createlab' %}">Click here to create a new lab.</a></p>
+<p><a href="{% url 'lab:labindex' %}">Click here to submit data to a lab.</a></p>
+<p><a href="{% url 'lab:submissionindex' %}">Click here to see lab results.</a></p>

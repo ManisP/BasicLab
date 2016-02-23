@@ -1,0 +1,14 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'lab/style.css' %}" />
+
+<h1>Create a new lab</h1>
+
+<form action="{% url 'lab:createlab' %}" method="POST">
+  {% csrf_token %}
+  <ul>
+    {{ form.as_p }}
+  </ul>
+  <input id="save_lab" type="submit" value="Save" />
+</form>
+
+<a href="{% url 'lab:index' %}"> Back to index </a>

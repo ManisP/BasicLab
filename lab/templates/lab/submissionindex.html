@@ -1,0 +1,16 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'lab/style.css' %}" />
+
+<h1> Choose a lab to view submissions </h1>
+
+{% if lab_list %}
+<ul>
+    {% for lab in lab_list %}
+    <p><a href="{% url 'lab:submissionview' lab.id %}">{{ lab.lab_name }}</a></p>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No labs are available.</p>
+{% endif %}
+
+<a href="{% url 'lab:index' %}"> Back to index </a>

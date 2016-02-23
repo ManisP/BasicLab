@@ -1,0 +1,17 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'lab/style.css' %}" />
+
+<h1>Lab Submission </h1>
+
+
+<b>Please answer these questions to meet the requirements of the lab!</b>
+<p>The Question to answer is: {{ lab.lab_question }}</p>
+
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
+
+<a href="{% url 'lab:index' %}"> Back to index </a>

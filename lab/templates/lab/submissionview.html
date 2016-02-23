@@ -1,0 +1,16 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'lab/style.css' %}" />
+
+<h1> Here are all the submissions for <b>{{ lab.lab_name }}</b> </h1>
+
+{% if submission_list %}
+<ul>
+    {% for submission in submission_list %}
+    <p><b>{{submission.student_name}}</b>: {{submission.student_email}}  [{{submission.input_int}}]</p>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No submissions are available.</p>
+{% endif %}
+
+<a href="{% url 'lab:index' %}"> Back to index </a>
