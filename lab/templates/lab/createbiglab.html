@@ -1,0 +1,18 @@
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'lab/style.css' %}" />
+
+<h1>Create a new Big Lab</h1>
+
+
+
+<form action="{% url 'lab:createbiglab' %}" method="POST">
+  {% csrf_token %}
+  <ul>
+    {{ big_lab_form.as_table }}
+  </ul>
+  <input id="more_questions" type="submit" value="Add Questions"/>
+  <input id="save_lab" type="submit" value="Create" />
+</form>
+
+
+<a href="{% url 'lab:index' %}"> Back to index </a>
