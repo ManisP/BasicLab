@@ -3,6 +3,8 @@
 <link rel="stylesheet" type="text/css" href="{% static 'lab/css/starter-template.css' %}" />
 <link rel="stylesheet" type="text/css" href="{% static 'lab/css/theme.css' %}" />
 
+{% load get_range %}
+
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <!-- <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
 
@@ -55,16 +57,53 @@
 
   <div class="container">
 
+    <form action="{% url 'lab:createsubmission' lab.id %}" method="POST">
+
     <div class="jumbotron">
-      <h1>{{lab.lab_name}}</h1>
+      <h2>{{lab.lab_name}}</h2>
       <p>This is the data entry and submission for the {{lab.lab_name}}: </p>
+      <p>Please enter your {{ submission_form }}</p>
     </div>
 
 
+    {% for question in questions %}
     <div class="jumbotron">
-      <h1>{{lab.lab_name}}</h1>
-      <p>This is the data entry and submission for the {{lab.lab_name}}: </p>
+        {% csrf_token %}
+        <p>{{ question.prompt }}</p>
+        <table class="table table-striped">
+
+          <!--  -->
+          <thead>
+            <tr>
+              <th>Trial</th>
+              {% for i in question.trials|get_range %}
+              <th> {{ i }}</th>
+              {% endfor %}
+              </tr>
+          </thead>
+
+          <!--  -->
+          <tbody>
+            {% for variable in question.variable_set.all%}
+            <tr>
+              <td>{{variable.variable_name}}</td>
+              {% for i in question.trials|get_range %}
+              <td> {{ i }}</td>
+              {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+
+
     </div>
+    {% endfor %}
+    <input id="save_lab" type="submit" class = "btn btn-primary" value="Save Lab" />
+    </form>
+
+
+
 
 
 

@@ -2,72 +2,39 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 import datetime
+# from django.utils.formats import get_format
 
 # Create your models here.
 
 class Lab(models.Model):
     lab_name = models.CharField(max_length=200)
-    lab_question = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published', default = timezone.now)
+    # my_formats = get_format('DATETIME_INPUT_FORMATS')
+    pub_date = models.DateTimeField( 'date published', default = timezone.now)
     def __str__(self):
         return self.lab_name
 
-
-class Submission(models.Model):
-    lab = models.ForeignKey(Lab)
-    student_name = models.CharField(max_length=200)
-    student_email = models.EmailField(max_length=254)
-    input_int = models.IntegerField()
-    def __str__(self):
-        return self.student_name
-
-
-# Works up to this point
-# ----------------------------------------------------------------------------
-# Anything under here is being tested
-class testLab(models.Model):
-    lab_name = models.CharField(max_length=200)
-    def __str__(self):
-        return self.lab_name
-
-class testQuestion(models.Model):
-    test_lab = models.ForeignKey(testLab)
-    question_name = models.CharField(max_length=200)
-    question_prompt = models.CharField(max_length=200)
-    def __str__(self):
-        return self.question_name
-
-
-
-
-class BigLab(models.Model):
-    lab_name = models.CharField(max_length=200)
-    number_of_question = models.IntegerField(default = 0)
-    pub_date = models.DateTimeField('date published', default = timezone.now)
-
-    def __str__(self):
-        return self.lab_name
-
+    def format_date(self):
+        return "%s" % format(self.pub_date, "%d-%M-%Y")
 
 class Question(models.Model):
-    bigLab = models.ForeignKey(BigLab)
+    lab = models.ForeignKey(Lab)
     prompt = models.CharField(max_length=200)
-    number_of_variables = models.IntegerField()
-    number_of_trials = models.IntegerField()
-    def __str__(self):
-        return self.prompt
+    trials = models.IntegerField(default=6)
 
+    def get_trials(self):
+        return self.trials;
 
 class Variable(models.Model):
     question = models.ForeignKey(Question)
-    variable_name = models.CharField(max_length=20)
-    trials = models.IntegerField()
+    variable_name = models.CharField(max_length=200)
     def __str__(self):
-        return self.prompt
+        return self.variable_name
 
+class Submission(models.Model):
+    lab = models.ForeignKey(Lab)
+    w_number = models.CharField(max_length=10)
 
-class DataValues(models.Model):
+class RawData(models.Model):
+    submission = models.ForeignKey(Submission)
     variable = models.ForeignKey(Variable)
-    data = models.FloatField()
-    def __str__(self):
-        return str(self.data)
+    raw_data = models.DecimalField(decimal_places = 10, max_digits = 50)

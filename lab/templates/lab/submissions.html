@@ -55,18 +55,44 @@
 
   <div class="container">
 
-    <div class="jumbotron">
-      <h1>{{lab.lab_name}}</h1>
-      <p>This is the data entry and submission for the {{lab.lab_name}}: </p>
+    <div class="starter-template">
+      <h1>Lab Submissions</h1>
+      <p class="lead">Browse the list of available labs.<br> Choose a lab and lets try a submission:</p>
     </div>
 
 
-    <div class="jumbotron">
-      <h1>{{lab.lab_name}}</h1>
-      <p>This is the data entry and submission for the {{lab.lab_name}}: </p>
+    {% if lab_list %}
+
+    <div class="col-md-6">
+      <table class="table table-striped">
+
+        <thead>
+          <tr>
+            <th>Lab Name</th>
+            <th>Date Published</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Entry for each lab  -->
+          {% for lab in lab_list %}
+          <tr>
+            <th><a href="{% url 'lab:createsubmission' lab.id %}">{{ lab.lab_name }}</a></th>
+            <th>{{ lab.format_date }}</th>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+
+
+      </table>
     </div>
 
-
+    <div>
+      {% else %}
+      <p>No labs are available.</p>
+      {% endif %}
+    </div>
 
   </div><!-- /.container -->
 

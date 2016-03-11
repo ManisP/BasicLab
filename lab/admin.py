@@ -1,24 +1,40 @@
 from django.contrib import admin
-from lab.models import Lab, Submission, testLab, testQuestion
-# Register your models here.
-
-admin.site.register(Lab)
-admin.site.register(Submission)
+import nested_admin
+from lab.models import Lab, Question, Variable, Submission, RawData
 
 
+class VariableInLine(nested_admin.NestedTabularInline):
+    model = Variable
+    extra = 0
 
-class ChoiceInline(admin.TabularInline):
-    model = testQuestion
-    extra = 1
-    
-class LabAdmin(admin.ModelAdmin):
+class QuestionInLine(nested_admin.NestedStackedInline):
+    model = Question
+    inlines = [VariableInLine]
+    extra = 0
+
+class LabAdmin(nested_admin.NestedModelAdmin):
     fieldsets = [
         ('Lab information', {'fields': ['lab_name']}),
+        ('Date information', {'fields': ['pub_date']}),
     ]
-    inlines = [ChoiceInline]
-    list_display = ('lab_name',)
+    inlines = [QuestionInLine]
+    list_display = ('lab_name', 'pub_date')
+    list_filter = ['pub_date']
     search_fields = ['lab_name']
 
+class RawDataInLine(nested_admin.NestedStackedInline):
+    model = RawData
+    extra = 0
 
-admin.site.register(testLab, LabAdmin)
-admin.site.register(testQuestion)
+
+class SubmissionAdmin(nested_admin.NestedModelAdmin):
+    fieldsets = [
+        ('W Number', {'fields': ['w_number']}),
+    ]
+    inlines = [RawDataInLine]
+    list_display = ('w_number',)
+    search_fields = ['w_number']
+
+admin.site.register(Lab, LabAdmin)
+admin.site.register(Submission, SubmissionAdmin)
+admin.site.register(RawData)
