@@ -29,6 +29,7 @@ class Variable(models.Model):
     variable_name = models.CharField(max_length=200)
     def __str__(self):
         return self.variable_name
+    
 
 class Submission(models.Model):
     lab = models.ForeignKey(Lab)

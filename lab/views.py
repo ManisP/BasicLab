@@ -15,17 +15,42 @@ from django.forms import formset_factory
 class Home(generic.TemplateView):
     template_name = 'lab/home.html'
 
-class Submissions(generic.TemplateView):
-    template_name = 'lab/submissions.html'
-
-class SubmissionsIndex(generic.ListView):
+class LabIndex(generic.ListView):
     model = Lab
     template_name = 'lab/submissions.html'
     context_object_name = 'lab_list'
 
-    # All the labs that it will be listing
     def get_queryset(self):
         return Lab.objects.all()
+
+class ResultIndex(generic.ListView):
+    model = Lab
+    template_name = 'lab/results.html'
+    context_object_name = 'lab_list'
+
+    def get_queryset(self):
+        return Lab.objects.all()
+
+class SubmissionIndex(generic.ListView):
+    model = Submission
+    template_name = 'lab/submissionindex.html'
+    context_object_name = 'submission_list'
+
+    def get_queryset(self):
+        lab = get_object_or_404(Lab, pk=self.kwargs['pk'])
+        return Submission.objects.filter(lab = lab)
+
+def SubmissionResults(request, **kwargs):
+    context = RequestContext(request)
+    submission = get_object_or_404(Submission, pk=kwargs['pk'])
+    lab = submission.lab
+    questions = Question.objects.filter(lab=lab)
+    context['submission'] = submission
+    context['lab'] = lab
+    context['questions'] = questions
+
+    return render_to_response('lab/viewsubmission.html', context)
+
 
 def CreateSubmission(request, **kwargs):
     context = RequestContext(request)
@@ -34,23 +59,33 @@ def CreateSubmission(request, **kwargs):
     submission_form = SubmissionForm(request.POST or None)
     question_forms = []
 
-
+    i = 0
     for question in questions:
-        tempForm = QuestionForm(question, request.POST or None)
+        tempForm = QuestionForm(question, request, i)
         question_forms.append(tempForm)
+        i = i + 1
 
 
     if request.method == "POST":
-
+        if submission_form.is_valid():
+            newSubmission = Submission()
+            newSubmission.lab = lab
+            newSubmission.w_number = submission_form.cleaned_data.get('w_number')
+            newSubmission.save()
 
 
         for question_form in question_forms:
             for variable_form in question_form.fields['variable_forms']:
                 print variable_form.variable.variable_name
                 for raw_data_form in variable_form.fields['raw_data_forms']:
-                    print str(raw_data_form.fields['raw_data'])
-
-
+                    if raw_data_form.is_valid():
+                        print "Made it here?"
+                        print raw_data_form.cleaned_data.get('raw_data')
+                        tempRaw = RawData()
+                        tempRaw.raw_data = raw_data_form.cleaned_data.get('raw_data')
+                        tempRaw.variable = variable_form.variable
+                        tempRaw.submission = newSubmission
+                        tempRaw.save()
 
         return render_to_response('lab/home.html', context)
 

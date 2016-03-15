@@ -4,6 +4,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'lab/css/theme.css' %}" />
 
 {% load get_range %}
+{% load filter_data %}
 
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <!-- <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
@@ -46,7 +47,7 @@
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="{% url 'lab:submissions' %}">Submissions</a></li>
+          <li><a href="{% url 'lab:submissions' %}">Submissions</a></li>
           <li><a href="#admin">Creations</a></li>
           <li><a href="#contact">Results</a></li>
         </ul>
@@ -55,34 +56,27 @@
   </nav>
 
   <div class="container">
-
-    <form action="{% url 'lab:createsubmission' lab.id %}" method="POST">
-      {% csrf_token %}
-
       <div class="jumbotron">
-        <h2>{{lab.lab_name}}</h2>
-        <p>This is the data entry and submission for the {{lab.lab_name}}: </p>
-        <p>Please enter your {{ submission_form }}</p>
+        <p>Lab Submission by: {{ submission.w_number }}
       </div>
-
-      {% for question_form in question_forms %}
+      {% for question in questions %}
       <div class="jumbotron">
-        <p>{{question_form.fields.prompt}}</p>
+        <p>{{question.prompt}}</p>
         <table class="table table-striped">
           <thead>
             <tr>
               <th>Trial</th>
-              {% for i in question_form.fields.num_of_trials|get_range %}
+              {% for i in question.trials|get_range %}
               <th> {{ i }}</th>
               {% endfor %}
             </tr>
           </thead>
           <tbody>
-            {% for variable_form in question_form.fields.variable_forms%}
+            {% for variable in question.variable_set.all%}
             <tr>
-              <td>{{ variable_form.fields.name }}</td>
-              {% for raw_data_form in variable_form.fields.raw_data_forms %}
-              <td>{{ raw_data_form.raw_data }} </td>
+              <td>{{ variable.variable_name }}</td>
+              {% for raw_data in variable.rawdata_set.all|filter_data:submission%}
+              <td>{{ raw_data.raw_data }} </td>
               {% endfor %}
             </tr>
             {% endfor %}
@@ -90,8 +84,6 @@
         </table>
       </div>
       {% endfor %}
-      <input id="save_lab" type="submit" class = "btn btn-primary" value="Submit Lab" />
-    </form>
   </div><!-- /.container -->
 
 
